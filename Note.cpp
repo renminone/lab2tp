@@ -1,32 +1,92 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
+#include <cstring>
 #include "Note.h"
 
 using namespace std;
+using std::strcpy;
 
 Note::Note() { }
 
-Note::Note(string s, string n, string nu, string b[3])
+Note::Note(char* s, char* n, int nu, int b[3])
 {
-	this->Surname = s;
-	this->Name = n;
+	int i = 0;
+	while (s[i] != ' ')
+	{
+		this->Surname[i] = s[i];
+		i++;
+	}
+	i = 0;
+	while (s[i] != ' ')
+	{
+		this->Name[i] = n[i];
+		i++;
+	}
 	this->number = nu;
-	this->birthday[0] = b[0];
-	this->birthday[1] = b[1];
-	this->birthday[2] = b[2];
+	for (i = 0; i < 3; i++) this->birthday[i] = b[i];
 }
 
 Note::Note(const Note& obj) { }
 
 Note::~Note() { }
 
-void Note::put()
+void Note::set()
 {
-	notepad.pushBack(Surname);
-	notepad.pushBack(Name);
-	notepad.pushBack(number);
-	for (int i = 0; i < 3; i++)
-		notepad.pushBack(birthday[i]);
+	int size = 0;
+	char r[100];
+	char det = 'x';
+	int i = 0;
+	cout << "Введите фамилию: ";
+	while(det != '_')
+	{
+		cin >> r[i];
+		det = r[i];
+		i++;
+		size++;
+	}
+	Surname = new char[size];
+	for (i = 0; i < size; i++)
+	{
+		if (r[i] != '_') Surname[i] = r[i];
+		else Surname[i] = '\0';
+	}
+	cout << "Введите имя: ";
+	i = 0;
+	size = 0;
+	det = 'x';
+	while (det != '_')
+	{
+		cin >> r[i];
+		det = r[i];
+		i++;
+		size++;
+	}
+	Name = new char[size];
+	for (i = 0; i < size; i++)
+	{
+		if (r[i] != '_') Name[i] = r[i];
+		else Name[i] = '\0';
+	}
+	cout << "Введите номер: ";
+	cin >> number;
+	cout << "Введите день рождения: ";
+	cin >> birthday[0];
+	cout << "Введите месяц рождения: ";
+	cin >> birthday[1];
+	cout << "Введите год рождения: ";
+	cin >> birthday[2];
 }
+
+void Note::get()
+{
+	cout << Surname << " " << Name << " " << number << " ";
+	for (int i = 0; i < 3; i++)
+	{
+		if (i != 2) cout << birthday[i] << "/";
+		else cout << birthday[i] << endl;
+	}
+}
+
 ostream& operator<<(ostream& stream, Note obj)
 {
 	stream << obj.Surname << " ";
