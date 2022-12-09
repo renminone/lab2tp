@@ -1,112 +1,233 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include <iostream>
-#include <cstring>
 #include "Note.h"
+#include <iostream>
+#include <string.h>
+#define FIELDSIZE 15
 
 using namespace std;
-using std::strcpy;
 
-Note::Note() { }
-
-Note::Note(char* s, char* n, int nu, int b[3])
+Note::Note(void)
 {
-	int i = 0;
-	while (s[i] != ' ')
-	{
-		this->Surname[i] = s[i];
-		i++;
-	}
-	i = 0;
-	while (s[i] != ' ')
-	{
-		this->Name[i] = n[i];
-		i++;
-	}
-	this->number = nu;
-	for (i = 0; i < 3; i++) this->birthday[i] = b[i];
+	cout << "Вызов конструктора класса Note." << endl;
+	name = surname = number = nullptr;
+	birthDate = nullptr;
+	days = 0;
 }
 
-Note::Note(const Note& obj) { }
-
-Note::~Note() { }
-
-void Note::set()
+Note::Note(char* s1, char* s2, char* s3, short day, short month, short year)
 {
-	int size = 0;
-	char r[100];
-	char det = 'x';
-	int i = 0;
-	cout << "Введите фамилию: ";
-	while(det != '_')
+	cout << "Вызов конструктора класса Note." << endl;
+	try
 	{
-		cin >> r[i];
-		det = r[i];
-		i++;
-		size++;
+		if (!name) name = new char[FIELDSIZE];
+		strcpy(name, s1);
+		if (!surname) surname = new char[FIELDSIZE];
+		strcpy(surname, s2);
+		if (!number) number = new char[FIELDSIZE];
+		strcpy(number, s3);
+		if (!birthDate) birthDate = new short[3];
 	}
-	Surname = new char[size];
-	for (i = 0; i < size; i++)
+	catch (bad_alloc)
 	{
-		if (r[i] != '_') Surname[i] = r[i];
-		else Surname[i] = '\0';
+		cout << "Ошибка оператора new." << endl;
+		exit(-1);
 	}
-	cout << "Введите имя: ";
-	i = 0;
-	size = 0;
-	det = 'x';
-	while (det != '_')
-	{
-		cin >> r[i];
-		det = r[i];
-		i++;
-		size++;
-	}
-	Name = new char[size];
-	for (i = 0; i < size; i++)
-	{
-		if (r[i] != '_') Name[i] = r[i];
-		else Name[i] = '\0';
-	}
-	cout << "Введите номер: ";
-	cin >> number;
-	cout << "Введите день рождения: ";
-	cin >> birthday[0];
-	cout << "Введите месяц рождения: ";
-	cin >> birthday[1];
-	cout << "Введите год рождения: ";
-	cin >> birthday[2];
+	birthDate[0] = day;
+	birthDate[1] = month;
+	birthDate[2] = year;
+	days = 0;
 }
 
-void Note::get()
+Note::Note(const Note& toCopy)
 {
-	cout << Surname << " " << Name << " " << number << " ";
-	for (int i = 0; i < 3; i++)
+	cout << "Вызов конструктора для класса Note." << endl;
+	try
 	{
-		if (i != 2) cout << birthday[i] << "/";
-		else cout << birthday[i] << endl;
+		if (toCopy.name)
+		{
+			name = new char[FIELDSIZE];
+			strcpy(name, toCopy.name);
+		}
+		else name = nullptr;
+		if (toCopy.surname)
+		{
+			surname = new char[FIELDSIZE];
+			strcpy(surname, toCopy.surname);
+		}
+		else surname = nullptr;
+		if (toCopy.number)
+		{
+			number = new char[FIELDSIZE];
+			strcpy(number, toCopy.number);
+		}
+		else number = nullptr;
+		if (toCopy.birthDate)
+		{
+			birthDate = new short[3];
+			for (int i = 0; i < 3; i++) birthDate[i] = toCopy.birthDate[i];
+		}
+		else birthDate = nullptr;
+	}
+	catch (bad_alloc)
+	{
+		cout << "Ошибка оператора new." << endl;
+		exit(-1);
+	}
+	days = toCopy.days;
+}
+Note::~Note(void)
+{
+	cout << "Вызов деструктора класса Note." << endl;
+	delete[] name;
+	delete[] surname;
+	delete[] number;
+	delete[] birthDate;
+}
+void Note::countDays(void)
+{
+	days = birthDate[0];
+	for (int i = 0; i < birthDate[1]; i++)
+		days += months[i];
+	days = days + birthDate[2] * 365;
+}
+void Note::change(void)
+{
+	int chanProp;
+	char buffErr[] = "Ошибка буфера ввода!";
+	cout << "Оригинальные данные: " << endl;
+	cout << endl;
+	cout << *(this);
+	cout << "Введите данные для изменения:\n1 - Имя.\n2 - Фамилия.\n3 - Номер.\n4 - День рождения.\n5 - Месяц рождения.\n6 - Год рождения." << endl;
+	try
+	{
+		cin >> chanProp;
+		if (cin.bad() || cin.fail()) throw buffErr;
+	}
+	catch (char*) { exit(1); }
+	if (chanProp < 0 || chanProp>6)
+	{
+		cout << "Неверный режим." << endl;
+		return;
+	}
+	chanProp--;
+	try { chanProp >> *(this); }
+	catch (int) { cout << "Неверные данные." << endl; return; }
+
+}
+Note* Note::get(void)
+{
+	Note* new_ob;
+	try { new_ob = new Note(*this); }
+	catch (bad_alloc)
+	{
+		cout << "Ошибка оператора new." << endl;
+		exit(-1);
+	}
+	return new_ob;
+}
+char* Note::get(int propNum)
+{
+	switch (propNum)
+	{
+	case 0: return name;
+	case 1: return surname;
+	case 2: return number;
 	}
 }
-
-ostream& operator<<(ostream& stream, Note obj)
+short Note::getDate(int perNum) { return birthDate[perNum]; }
+void Note::set(char* s1, char* s2, char* s3, short day, short month, short year)
 {
-	stream << obj.Surname << " ";
-	stream << obj.Name << " ";
-	stream << obj.number << " ";
-	stream << obj.birthday[0] << "/";
-	stream << obj.birthday[1] << "/";
-	stream << obj.birthday[2] << "\n";
-
-	return stream;
+	try
+	{
+		if (!name) name = new char[FIELDSIZE];
+		strcpy(name, s1);
+		if (!surname) surname = new char[FIELDSIZE];
+		strcpy(surname, s2);
+		if (!number) number = new char[FIELDSIZE];
+		strcpy(number, s3);
+		if (!birthDate) birthDate = new short[3]; 
+	}
+	catch (bad_alloc)
+	{
+		cout << "Ошибка оператора new." << endl;
+		exit(-1);
+	}
+	birthDate[0] = day;
+	birthDate[1] = month;
+	birthDate[2] = year;
 }
-
-istream& operator>>(istream& stream, Note& obj)
+ostream& operator<<(ostream& out, Note& per)
 {
-	stream >> obj.Surname;
-	stream >> obj.Name;
-	stream >> obj.number;
-	stream >> obj.birthday[0];
-	stream >> obj.birthday[1];
-	stream >> obj.birthday[2];
-
-	return stream;
+	out << "Имя:" << per.name << endl;
+	out << "Фамилия:" << per.surname << endl;
+	out << "Номер:" << per.number << endl;
+	out << "Дата рождения:" << per.birthDate[0] << '.' << per.birthDate[1] << '.' << per.birthDate[2] << endl;
+	out << endl;
+	return out;
+}
+void operator>>(int perNum, Note& per)
+{
+	int errDate = 0;
+	short b = 0;
+	char buffErr[] = "Ошибка буфера ввода!";
+	try
+	{
+		if (!per.name) per.name = new char[FIELDSIZE];
+		if (!per.surname) per.surname = new char[FIELDSIZE];
+		if (!per.number) per.number = new char[FIELDSIZE];
+		if (!per.birthDate) per.birthDate = new short[3];
+	}
+	catch (bad_alloc)
+	{
+		cout << "Ошибка оператора new." << endl;
+		exit(-1);
+	}
+	try
+	{
+		switch (perNum)
+		{
+		case 0:
+			cout << "Введите имя:" << endl;
+			cin >> per.name;
+			if (cin.bad() || cin.fail()) throw buffErr;
+			cout << endl;
+			break;
+		case 1:
+			cout << "Введите фамилию:" << endl;
+			cin >> per.surname;
+			if (cin.bad() || cin.fail()) throw buffErr;
+			cout << endl;
+			break;
+		case 2:
+			cout << "Введите номер телефона:" << endl;
+			cin >> per.number;
+			if (cin.bad() || cin.fail()) throw buffErr;
+			cout << endl;
+			break;
+		case 3:
+			cout << "Введите день рождения:" << endl;
+			cin >> b;
+			if (cin.bad() || cin.fail()) throw buffErr;
+			if (b < 1 || b > 31) throw errDate;
+			per.birthDate[0] = b;
+			cout << endl;
+			break;
+		case 4:
+			cout << "Введите месяц рождения:" << endl;
+			cin >> b;
+			if (cin.bad() || cin.fail()) throw buffErr;
+			if (b < 1 || b > 12) throw errDate;
+			per.birthDate[1] = b;
+			cout << endl;
+			break;
+		case 5:
+			cout << "Введите год рождения:" << endl;
+			cin >> b;
+			if (cin.bad() || cin.fail()) { throw buffErr; }
+			if (b < 0) { throw errDate; }
+			per.birthDate[2] = b;
+			break;
+		}
+	}
+	catch (char*) { exit(1); }
 }
