@@ -27,9 +27,7 @@ int main()
 		cin >> t;
 		switch (t)
 		{
-		case 1: 
-			task1();
-			break;
+		case 1: task1(); break;
 		case 2: task2(); break;
 		case 0: k = 0; break;
 		}
