@@ -28,6 +28,5 @@ void task2()
 		s = replacer(s);
 		cout << s << endl; // выводим на экран
 	}
-
 	f.close();
 }
