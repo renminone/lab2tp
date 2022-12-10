@@ -12,7 +12,6 @@ protected:
 	place* operator[](int i);
 public:
 	void add(Note* toInsert);
-	void arconv();
 	void addToEnd(Note* toInsert);
 	void insert(int pos, Note* toInsert);
 	void copy(int sou, int dest);
