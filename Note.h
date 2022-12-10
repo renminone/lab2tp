@@ -11,14 +11,14 @@ class Note
 	short int* birthDate;
 	int months[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 public:
-
+	
+	int nsize;
 	Note(void);
 	Note(char* s1, char* s2, char* s3, short day, short month, short year);
 	Note(const Note& toCopy);
 	~Note(void);
 
-	void countDays(void);
-	unsigned days;
+	char *getName();
 	void change(void);
 	Note* get(void);
 	char* get(int propNum);
