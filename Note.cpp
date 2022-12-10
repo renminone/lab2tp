@@ -11,7 +11,7 @@ Note::Note(void)
 	cout << "Вызов конструктора класса Note." << endl;
 	name = surname = number = nullptr;
 	birthDate = nullptr;
-	days = 0;
+	nsize = 0;
 }
 
 Note::Note(char* s1, char* s2, char* s3, short day, short month, short year)
@@ -35,7 +35,7 @@ Note::Note(char* s1, char* s2, char* s3, short day, short month, short year)
 	birthDate[0] = day;
 	birthDate[1] = month;
 	birthDate[2] = year;
-	days = 0;
+	nsize = 0;
 }
 
 Note::Note(const Note& toCopy)
@@ -73,7 +73,7 @@ Note::Note(const Note& toCopy)
 		cout << "Ошибка оператора new." << endl;
 		exit(-1);
 	}
-	days = toCopy.days;
+	nsize = toCopy.nsize;
 }
 Note::~Note(void)
 {
@@ -83,13 +83,12 @@ Note::~Note(void)
 	delete[] number;
 	delete[] birthDate;
 }
-void Note::countDays(void)
+
+char* Note::getName()
 {
-	days = birthDate[0];
-	for (int i = 0; i < birthDate[1]; i++)
-		days += months[i];
-	days = days + birthDate[2] * 365;
+	return name;
 }
+
 void Note::change(void)
 {
 	int chanProp;
